@@ -1,0 +1,32 @@
+{% liquid
+  comment
+    Renders chips for the product-item hover display.
+
+    Required parameters:
+    	- prod: { Object } The product with chips to display.
+    	- option_name: { String } The first-found option name that enables chips.
+  endcomment
+%}
+
+<div class="product-chips-options">
+  <ul class="product-chips-options__list ff-body fs-body-50">
+    {%- liquid
+      assign option_name_lower = option_name | downcase
+      
+      # Sort size values if this is Taglia option
+      if option_name_lower == 'taglia'
+        capture sorted_values_string
+          render 'sort-size-values', values: prod.options_by_name[option_name].values
+        endcapture
+        assign chip_values = sorted_values_string | split: '||'
+      else
+        assign chip_values = prod.options_by_name[option_name].values
+      endif
+    -%}
+    {%- for value in chip_values -%}
+      <li class="product-chips-options__item product-chips-options__item--chip">
+        {{ value }}
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>

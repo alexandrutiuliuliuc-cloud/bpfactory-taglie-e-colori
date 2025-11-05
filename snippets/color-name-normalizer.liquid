@@ -1,0 +1,87 @@
+{%- liquid
+  comment
+    Normalizes color names by removing codes and standardizing capitalization.
+    Input: color_name (e.g., "BIANCO (001)", "bei", "white")
+    Output: Normalized name (e.g., "Bianco", "Beige", "Bianco")
+  endcomment
+
+  assign original_color = color_name | strip
+  assign normalized_color = original_color
+
+  # Remove parenthetical codes like (001), (ABC123), [XYZ]
+  assign normalized_color = normalized_color | replace: '(', '|OPEN|' | replace: ')', '|CLOSE|' | split: '|OPEN|' | first | replace: '[', '|OPEN2|' | replace: ']', '|CLOSE2|' | split: '|OPEN2|' | first | strip
+
+  # Convert to lowercase for mapping
+  assign color_lower = normalized_color | downcase
+
+  # Map common abbreviations and variations to standard names
+  case color_lower
+    when 'bei', 'beig'
+      assign normalized_color = 'Beige'
+    when 'bia', 'bianc', 'white', 'wht'
+      assign normalized_color = 'Bianco'
+    when 'ne', 'ner', 'black', 'blk'
+      assign normalized_color = 'Nero'
+    when 'gri', 'grig', 'grey', 'gray'
+      assign normalized_color = 'Grigio'
+    when 'mar', 'marr', 'brown', 'brn'
+      assign normalized_color = 'Marrone'
+    when 'bl', 'blue'
+      assign normalized_color = 'Blu'
+    when 'ros', 'red'
+      assign normalized_color = 'Rosso'
+    when 'ver', 'verd', 'green', 'grn'
+      assign normalized_color = 'Verde'
+    when 'gia', 'giall', 'yellow', 'yel'
+      assign normalized_color = 'Giallo'
+    when 'aran', 'aranc', 'aranci', 'orange', 'org'
+      assign normalized_color = 'Arancione'
+    when 'vio', 'viol', 'viola', 'purple', 'pur'
+      assign normalized_color = 'Viola'
+    when 'rosa', 'pink', 'pnk'
+      assign normalized_color = 'Rosa'
+    when 'azz', 'azzur', 'azzurr', 'light blue', 'sky blue'
+      assign normalized_color = 'Azzurro'
+    when 'camo', 'camou', 'camouf', 'camouflage', 'mimetico'
+      assign normalized_color = 'Camouflage'
+    when 'army', 'militare', 'militar'
+      assign normalized_color = 'Army'
+    when 'denim', 'jeans'
+      assign normalized_color = 'Denim'
+    when 'bord', 'borde', 'bordea', 'bordeaux', 'burgundy'
+      assign normalized_color = 'Bordeaux'
+    when 'animal', 'animalier', 'leopard', 'zebra'
+      assign normalized_color = 'Animalier'
+    when 'fanta', 'fantas', 'fantasi', 'fantasia', 'pattern', 'print'
+      assign normalized_color = 'Fantasia'
+    when 'riga', 'rigat', 'rigato', 'striped', 'stripe'
+      assign normalized_color = 'Rigato'
+    when 'oro', 'gold', 'gld'
+      assign normalized_color = 'Oro'
+    when 'argento', 'silver', 'slv'
+      assign normalized_color = 'Argento'
+    when 'taupe', 'taup'
+      assign normalized_color = 'Taupe'
+    when 'ecru', 'ecr', 'cream', 'crema'
+      assign normalized_color = 'Ecru'
+    when 'avorio', 'ivory', 'ivo'
+      assign normalized_color = 'Avorio'
+    when 'camel', 'cam', 'cammello', 'camm'
+      assign normalized_color = 'Cammello'
+    when 'moro', 'mor', 'dark brown'
+      assign normalized_color = 'Moro'
+    when 'antracite', 'antra', 'anthracite', 'charcoal'
+      assign normalized_color = 'Antracite'
+    when 'turchese', 'turquoise', 'turq'
+      assign normalized_color = 'Turchese'
+    when 'fuxia', 'fuchsia', 'fucsia', 'magenta'
+      assign normalized_color = 'Fuxia'
+    else
+      # If no mapping found, capitalize first letter
+      assign first_char = normalized_color | slice: 0 | upcase
+      assign rest_chars = normalized_color | slice: 1, 100 | downcase
+      assign normalized_color = first_char | append: rest_chars
+  endcase
+
+  echo normalized_color
+-%}

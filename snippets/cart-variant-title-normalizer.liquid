@@ -1,0 +1,28 @@
+{%- comment -%}
+  Normalizes variant title to show mother color names in UPPERCASE
+  Required: variant_title
+{%- endcomment -%}
+
+{%- assign variant_parts = variant_title | split: ' / ' -%}
+{%- assign first_part = variant_parts[0] | strip -%}
+
+{%- if variant_parts.size > 1 -%}
+  {%- assign second_part = variant_parts[1] | strip -%}
+  {%- if first_part contains '(' or first_part contains '[' -%}
+    {%- capture normalized_first -%}
+      {%- render 'color-name-normalizer', color_name: first_part -%}
+    {%- endcapture -%}
+    {{- normalized_first | upcase -}} / {{ second_part }}
+  {%- else -%}
+    {{ first_part }} / {{ second_part }}
+  {%- endif -%}
+{%- else -%}
+  {%- if first_part contains '(' or first_part contains '[' -%}
+    {%- capture normalized_first -%}
+      {%- render 'color-name-normalizer', color_name: first_part -%}
+    {%- endcapture -%}
+    {{- normalized_first | upcase -}}
+  {%- else -%}
+    {{ first_part }}
+  {%- endif -%}
+{%- endif -%}

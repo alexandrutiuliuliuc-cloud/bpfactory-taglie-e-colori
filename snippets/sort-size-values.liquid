@@ -1,0 +1,52 @@
+{%- comment -%}
+  Sorts Taglia (size) values in logical order
+  Input: values (array of size values)
+  Output: Sorted string joined by '||'
+{%- endcomment -%}
+
+{%- liquid
+  assign size_order = 'XXXS,XXS,XS,S,M,L,XL,XXL,XXXL,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50' | split: ','
+  
+  assign sorted_values = ''
+  
+  # First pass: add all values that match the predefined order
+  for size in size_order
+    for value in values
+      assign value_upper = value | upcase | strip
+      assign size_upper = size | upcase
+      
+      if value_upper == size_upper
+        if sorted_values == ''
+          assign sorted_values = value
+        else
+          assign sorted_values = sorted_values | append: '||' | append: value
+        endif
+      endif
+    endfor
+  endfor
+  
+  # Second pass: add any remaining values not in the predefined order
+  for value in values
+    assign value_upper = value | upcase | strip
+    assign found = false
+    
+    for size in size_order
+      assign size_upper = size | upcase
+      if value_upper == size_upper
+        assign found = true
+        break
+      endif
+    endfor
+    
+    unless found
+      if sorted_values == ''
+        assign sorted_values = value
+      else
+        assign sorted_values = sorted_values | append: '||' | append: value
+      endif
+    endunless
+  endfor
+  
+  echo sorted_values
+-%}
+
