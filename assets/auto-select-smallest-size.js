@@ -114,15 +114,36 @@
         if (hasSize && select.value !== smallestSize) {
           console.log(logPrefix, `🔄 Changing select from ${select.value} to ${smallestSize}`);
           select.value = smallestSize;
+          
+          // Trigger change events
           select.dispatchEvent(new Event('change', { bubbles: true }));
           select.dispatchEvent(new Event('input', { bubbles: true }));
           
-          // Update visible label
+          // Force update visible label - find ALL possible display elements
           const wrapper = select.closest('.select-wrapper, .product__option, [data-product-option]');
           if (wrapper) {
-            const displayElements = wrapper.querySelectorAll('span[data-selected-value-for-option], .selected-value');
+            const displayElements = wrapper.querySelectorAll('[data-selected-value-for-option], .selected-value, [data-selected-value]');
+            console.log(logPrefix, `Found ${displayElements.length} display elements to update`);
+            
             displayElements.forEach(elem => {
               if (elem.tagName !== 'SELECT' && elem.tagName !== 'OPTION') {
+                console.log(logPrefix, `Updating display element from "${elem.textContent}" to "${smallestSize}"`);
+                elem.textContent = smallestSize;
+              }
+            });
+          }
+          
+          // Also search globally for the option display (in case wrapper doesn't contain it)
+          const optionName = select.name; // e.g., "options[Taglia]"
+          if (optionName) {
+            const allDisplayElements = searchContext.querySelectorAll(`[data-selected-value-for-option][data-option-name*="option"]`);
+            console.log(logPrefix, `Found ${allDisplayElements.length} global display elements`);
+            
+            allDisplayElements.forEach(elem => {
+              const elemOptionName = elem.getAttribute('data-option-name');
+              // Check if this is for "Taglia" option
+              if (elemOptionName && (elemOptionName.includes('option2') || elemOptionName.toLowerCase().includes('taglia'))) {
+                console.log(logPrefix, `Force updating global display: "${elem.textContent}" -> "${smallestSize}"`);
                 elem.textContent = smallestSize;
               }
             });
